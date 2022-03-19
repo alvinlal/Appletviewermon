@@ -19,9 +19,13 @@ console.log(`observing ${filename}`);
 
 function runProcess() {
   console.log('rerunning...');
-  appletviewerProcess = spawn(`javac ${filename} && appletviewer ${filename}`, [], { shell: true, detached: true }, (err, stdout, stderr) => {
-    console.log(`stdout: ${stdout}`);
-    console.log(`stderr: ${stderr}`);
+  appletviewerProcess = exec(`javac ${filename} && appletviewer ${filename}`, { shell: true, detached: true }, (err, stdout, stderr) => {
+    if (stderr) {
+      console.log(stderr);
+    }
+    if (stdout) {
+      console.log(stdout);
+    }
   });
 }
 
