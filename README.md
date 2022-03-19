@@ -2,4 +2,4 @@
 hot reload for appletviewer
 
 ## Usage
-node appletviewermon.js <nameofappletviewerfile>
+node appletviewermon.js nameofappletviewerfile
