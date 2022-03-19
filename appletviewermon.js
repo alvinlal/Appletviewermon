@@ -4,9 +4,10 @@
 
 const fs = require('fs');
 const { exit } = require('process');
-const { exec, spawn } = require('child_process');
+const { exec, spawn, execSync } = require('child_process');
 
 var appletviewerProcess;
+var compilerProcess;
 
 if (!process.argv[2]) {
   console.log('please provide a filename !');
@@ -19,21 +20,25 @@ console.log(`observing ${filename}`);
 
 function runProcess() {
   console.log('rerunning...');
-  appletviewerProcess = exec(`javac ${filename} && appletviewer ${filename}`, { shell: true, detached: true });
+  try {
+    execSync(`javac ${filename}`, { shell: true });
+    appletviewerProcess = exec(`appletviewer ${filename}`, { shell: true, detached: true });
+    appletviewerProcess.stdout.on('data', data => {
+      console.log(data.toString());
+    });
+    appletviewerProcess.stderr.on('data', data => {
+      console.log(data);
+    });
+  } catch (err) {
+    console.log(err.stderr.toString());
+  }
 }
+
+runProcess();
 
 fs.watchFile(filename, {}, () => {
   if (appletviewerProcess) {
     exec(`taskkill -F -T -PID ${appletviewerProcess.pid}`);
   }
   runProcess();
-});
-
-runProcess();
-
-appletviewerProcess.stdout.on('data', data => {
-  console.log(data);
-});
-appletviewerProcess.stderr.on('data', data => {
-  console.log(data);
 });
