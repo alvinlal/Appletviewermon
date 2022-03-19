@@ -19,14 +19,7 @@ console.log(`observing ${filename}`);
 
 function runProcess() {
   console.log('rerunning...');
-  appletviewerProcess = exec(`javac ${filename} && appletviewer ${filename}`, { shell: true, detached: true }, (err, stdout, stderr) => {
-    if (stderr) {
-      console.log(stderr);
-    }
-    if (stdout) {
-      console.log(stdout);
-    }
-  });
+  appletviewerProcess = exec(`javac ${filename} && appletviewer ${filename}`, { shell: true, detached: true });
 }
 
 fs.watchFile(filename, {}, () => {
@@ -37,3 +30,10 @@ fs.watchFile(filename, {}, () => {
 });
 
 runProcess();
+
+appletviewerProcess.stdout.on('data', data => {
+  console.log(data);
+});
+appletviewerProcess.stderr.on('data', data => {
+  console.log(data);
+});
